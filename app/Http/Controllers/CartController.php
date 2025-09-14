@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
@@ -12,7 +13,8 @@ class CartController extends Controller
      */
     public function index()
     {
-        //
+        $history = Cart::with('items.product')->where('user_id', Auth::id())->where('status', 'checked_out');
+        return view('carts.index', compact('history'));
     }
 
     /**
@@ -36,7 +38,8 @@ class CartController extends Controller
      */
     public function show(Cart $cart)
     {
-        //
+        $cart = Cart::with('items.product')->where('user_id', Auth::id())->where('status', 'active')->first();
+        return view('carts.show', compact('cart'));
     }
 
     /**

@@ -36,7 +36,7 @@ class TransactionDetailController extends Controller
      */
     public function show(TransactionDetail $transactionDetail)
     {
-        //
+        return view('transaction_details.show', compact('transactionDetail'));
     }
 
     /**
