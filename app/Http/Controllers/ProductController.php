@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -12,7 +13,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $products = Product::with('seller')->get();
+        return view('products.index', compact('products'));
     }
 
     /**
@@ -20,7 +22,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        return view('products.create');
     }
 
     /**
@@ -28,7 +30,23 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'product_name' => 'required|string|max:255',
+            'product_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'description' => 'required',
+            'price' => 'required|numeric',
+            'stock' => 'required|integer',
+        ]);
+
+        if ($request->hasFile('product_image')) {
+            $validated['product_image'] = $request->file('product_image')->store('products', 'public');
+        }
+
+        $validated['user_id'] = Auth::id();
+
+        Product::create($validated);
+
+        return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan.');
     }
 
     /**
@@ -36,7 +54,8 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        $product->load('seller');
+        return view('products.show', compact('product'));
     }
 
     /**
@@ -44,7 +63,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        return view('products.edit', compact('product'));
     }
 
     /**
@@ -52,7 +71,21 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $validated = $request->validate([
+            'product_name' => 'required|string|max:255',
+            'product_image' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'description' => 'required',
+            'price' => 'required|numeric',
+            'stock' => 'required|integer',
+        ]);
+
+        if ($request->hasFile('product_image')) {
+            $validated['product_image'] = $request->file('product_image')->store('products', 'public');
+        }
+
+        $product->update($validated);
+
+        return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui.');
     }
 
     /**
@@ -60,6 +93,7 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $product->delete();
+        return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
     }
 }
