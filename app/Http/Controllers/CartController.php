@@ -13,8 +13,8 @@ class CartController extends Controller
      */
     public function index()
     {
-        $history = Cart::with('items.product')->where('user_id', Auth::id())->where('status', 'checked_out');
-        return view('carts.index', compact('history'));
+        $cart = Cart::with('items.product')->where('user_id', Auth::id())->where('status', 'active')->first();
+        return view('cart.index', compact('cart'));
     }
 
     /**
@@ -38,8 +38,7 @@ class CartController extends Controller
      */
     public function show(Cart $cart)
     {
-        $cart = Cart::with('items.product')->where('user_id', Auth::id())->where('status', 'active')->first();
-        return view('carts.show', compact('cart'));
+        //
     }
 
     /**

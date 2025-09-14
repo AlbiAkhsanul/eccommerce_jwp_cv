@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -38,6 +39,7 @@ class ProductController extends Controller
             'stock' => 'required|integer',
         ]);
 
+
         if ($request->hasFile('product_image')) {
             $validated['product_image'] = $request->file('product_image')->store('products', 'public');
         }
@@ -46,7 +48,7 @@ class ProductController extends Controller
 
         Product::create($validated);
 
-        return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan.');
+        return redirect()->route('dashboard')->with('success', 'Produk berhasil ditambahkan.');
     }
 
     /**
@@ -80,12 +82,18 @@ class ProductController extends Controller
         ]);
 
         if ($request->hasFile('product_image')) {
+            // Hapus gambar lama jika ada
+            if ($product->product_image && Storage::disk('public')->exists($product->product_image)) {
+                Storage::disk('public')->delete($product->product_image);
+            }
+
+            // Simpan gambar baru
             $validated['product_image'] = $request->file('product_image')->store('products', 'public');
         }
 
         $product->update($validated);
 
-        return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui.');
+        return redirect()->route('dashboard')->with('success', 'Produk berhasil diperbarui.');
     }
 
     /**
@@ -93,7 +101,11 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
+        // Hapus gambar produk dari storage jika ada
+        if ($product->product_image && Storage::disk('public')->exists($product->product_image)) {
+            Storage::disk('public')->delete($product->product_image);
+        }
         $product->delete();
-        return redirect()->route('products.index')->with('success', 'Produk berhasil dihapus.');
+        return redirect()->route('dashboard')->with('success', 'Produk berhasil dihapus.');
     }
 }
