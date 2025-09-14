@@ -40,7 +40,7 @@
 
                 <!-- List produk milik user -->
                 @forelse(Auth::user()->products as $product)
-                    <div class="mb-3 p-4 bg-gray-50 border border-gray-200 rounded-lg flex justify-between items-center hover:bg-gray-100 transition">
+                    <div class="mb-2 p-3 bg-gray-50 border border-gray-200 rounded-lg flex justify-between items-center hover:bg-gray-100 transition">
                         <div>
                             <p class="text-gray-800 font-medium">{{ $product->product_name }}</p>
                         </div>
