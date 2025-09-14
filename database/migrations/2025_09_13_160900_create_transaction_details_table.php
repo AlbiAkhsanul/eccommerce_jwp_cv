@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('transaction_details', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('transaction_id')->constrained()->onDelete('restrict');
+            $table->foreignId('product_id')->constrained()->onDelete('restrict');
+            $table->integer('amount');
+            $table->decimal('total_price_item', 12, 2)->default(0);
             $table->timestamps();
         });
     }

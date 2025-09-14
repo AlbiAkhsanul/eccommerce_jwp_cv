@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('restrict');
+            $table->decimal('total_price', 12, 2);
+            $table->date('transaction_date');
+            $table->string('status', 20)->default('pending');
             $table->timestamps();
         });
     }
